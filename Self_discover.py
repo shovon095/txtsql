@@ -219,13 +219,19 @@ def implement_sql_generation(question, reasoning_structure, schema_prompt, engin
     return sql_query.strip()
 
 
-def connect_gpt(engine, prompt, max_tokens, temperature, stop):
-    # print(prompt)
+def connect_gpt(prompt, engine, max_tokens, temperature=0.5, stop=None):
     try:
-        result = openai.Completion.create(engine=engine, prompt=prompt, max_tokens=max_tokens, temperature=temperature, stop=stop)
+        response = openai.Completion.create(
+            engine=engine,
+            prompt=prompt,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            stop=stop
+        )
+        return response['choices'][0]['text'].strip()  # Correctly accessing the 'text' key
     except Exception as e:
-        result = 'error:{}'.format(e)
-    return result
+        return f"Error: {str(e)}"
+
 
 
 def collect_response_from_gpt(db_path_list, question_list, api_key, engine, knowledge_list=None):
